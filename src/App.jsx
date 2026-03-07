@@ -2,16 +2,6 @@ import { useState } from "react";
 import "./App.css";
 import { useEffect } from "react";
 
-const Lists = [
-  {
-    alphabet: "მართლმწერი",
-    mainlist: "ტექსტის შედარება",
-    input: "ხმა",
-    text: "ტექსტი",
-    file: "PDF კონვერტაცია",
-  },
-];
-
 function Home({ setDataList }) {
   const handleData = () => {
     setDataList(true);
@@ -202,25 +192,24 @@ function Footer({
   setSecondText,
   compare,
 }) {
-  const words1 = firstText.trim().split(" ");
-  const words2 = secondText.trim().split(" ");
+  const words1 = firstText.trim().split(/\s+/).filter(Boolean);
+  const words2 = secondText.trim().split(/\s+/).filter(Boolean);
 
-  const renderWords = (wordsA, wordsB, type) => {
-    return wordsA.map((word, index) => {
-      const isMatch = wordsB[index] === word;
+  const getDiff = () => {
+    const count1 = {};
+    const count2 = {};
 
-      let bg = "transparent";
+    words1.forEach((w) => (count1[w] = (count1[w] || 0) + 1));
+    words2.forEach((w) => (count2[w] = (count2[w] || 0) + 1));
 
-      if (compare && !isMatch) {
-        if (type === "first") bg = "salmon";
-        if (type === "second") bg = "lightgreen";
-      }
-
+    const result1 = words1.map((word, i) => {
+      const inSecond = count2[word] > 0;
+      if (inSecond) count2[word]--;
       return (
         <span
-          key={index}
+          key={i}
           style={{
-            backgroundColor: bg,
+            backgroundColor: inSecond ? "transparent" : "salmon",
             padding: "2px 4px",
             marginRight: "4px",
           }}
@@ -229,14 +218,39 @@ function Footer({
         </span>
       );
     });
+
+    words1.forEach((w) => (count1[w] = (count1[w] || 0) + 1));
+
+    const result2 = words2.map((word, i) => {
+      const inFirst = count1[word] > 0;
+      if (inFirst) count1[word]--;
+      return (
+        <span
+          key={i}
+          style={{
+            backgroundColor: inFirst ? "transparent" : "lightgreen",
+            padding: "2px 4px",
+            marginRight: "4px",
+          }}
+        >
+          {word}
+        </span>
+      );
+    });
+
+    return { result1, result2 };
   };
+
+  const { result1, result2 } = compare
+    ? getDiff()
+    : { result1: null, result2: null };
 
   return (
     <div className="footer">
       <div className="line"></div>
       <div className="footer-inputs">
         {compare ? (
-          <div id="first-input">{renderWords(words1, words2, "first")}</div>
+          <div id="first-input">{result1}</div>
         ) : (
           <textarea
             id="first-input"
@@ -278,7 +292,7 @@ function Footer({
         </svg>
 
         {compare ? (
-          <div id="second-input">{renderWords(words2, words1, "second")}</div>
+          <div id="second-input">{result2}</div>
         ) : (
           <textarea
             id="second-input"
@@ -311,7 +325,7 @@ function FooterLast({ setCompare, setIsLoading, firstText, secondText }) {
         onClick={handleCompare}
         disabled={isDisabled}
         style={{
-          backgroundColor: isDisabled ? "#ccc" : "#4571E4",
+          backgroundColor: isDisabled ? "#383a4899" : "#4571E4",
           cursor: isDisabled ? "not-allowed" : "pointer",
         }}
       >
@@ -321,7 +335,7 @@ function FooterLast({ setCompare, setIsLoading, firstText, secondText }) {
   );
 }
 
-function Header({ alphabet, mainlist, input, text, file }) {
+function Header() {
   return (
     <div className="Head">
       <div className="hide-arrow">
@@ -378,7 +392,7 @@ function Header({ alphabet, mainlist, input, text, file }) {
               fill="white"
             />
           </svg>
-          {alphabet}{" "}
+          <p> მართლმწერი </p>{" "}
         </button>
         <button className="menu-list-button active">
           {" "}
@@ -440,7 +454,7 @@ function Header({ alphabet, mainlist, input, text, file }) {
               stroke-linejoin="round"
             />
           </svg>
-          {mainlist}{" "}
+          <p> ტექსტის შედარება </p>{" "}
         </button>
         <button className="menu-list-button">
           {" "}
@@ -481,7 +495,7 @@ function Header({ alphabet, mainlist, input, text, file }) {
               stroke-linejoin="round"
             />
           </svg>
-          {input}{" "}
+          <p> ხმა </p>{" "}
           <svg
             className="eight-svg"
             width="16"
@@ -503,7 +517,7 @@ function Header({ alphabet, mainlist, input, text, file }) {
               stroke-linejoin="round"
             />
           </svg>
-          {text}
+          <p> ტექსტი </p>
         </button>
         <button className="menu-list-button">
           {" "}
@@ -551,7 +565,7 @@ function Header({ alphabet, mainlist, input, text, file }) {
               stroke-linejoin="round"
             />
           </svg>
-          {text}{" "}
+          <p> ტექსტი </p>{" "}
           <svg
             className="eight-svg"
             width="16"
@@ -573,7 +587,7 @@ function Header({ alphabet, mainlist, input, text, file }) {
               stroke-linejoin="round"
             />
           </svg>{" "}
-          {input}
+          <p> ხმა </p>
         </button>
         <button className="menu-list-button">
           {" "}
@@ -614,7 +628,7 @@ function Header({ alphabet, mainlist, input, text, file }) {
               stroke-linejoin="round"
             />
           </svg>
-          {file}{" "}
+          <p> PDF კონვერტაცია </p>{" "}
         </button>
       </div>
       <div className="bottom-div">
@@ -741,7 +755,7 @@ function Loading({ onFinish }) {
   );
 }
 
-function Menudata({ alphabet, mainlist, input, text, file, setDataList }) {
+function Menudata({ setDataList }) {
   return (
     <div className="menudata">
       <div className="menudata-box">
@@ -794,7 +808,7 @@ function Menudata({ alphabet, mainlist, input, text, file, setDataList }) {
                 fill="white"
               />
             </svg>
-            {alphabet}{" "}
+            <p> მართლმწერი </p>{" "}
           </button>
           <button className="menudata-list-butto1">
             {" "}
@@ -856,7 +870,7 @@ function Menudata({ alphabet, mainlist, input, text, file, setDataList }) {
                 stroke-linejoin="round"
               />
             </svg>
-            {mainlist}{" "}
+            <p> ტექსტის შედარება </p>{" "}
           </button>
           <button className="menudata-list-button">
             {" "}
@@ -897,7 +911,7 @@ function Menudata({ alphabet, mainlist, input, text, file, setDataList }) {
                 stroke-linejoin="round"
               />
             </svg>
-            {input}{" "}
+            <p> ხმა </p>{" "}
             <svg
               className="eight-svg"
               width="16"
@@ -919,7 +933,7 @@ function Menudata({ alphabet, mainlist, input, text, file, setDataList }) {
                 stroke-linejoin="round"
               />
             </svg>
-            {text}
+            <p> ტექსტი </p>
           </button>
           <button className="menudata-list-button">
             {" "}
@@ -967,7 +981,7 @@ function Menudata({ alphabet, mainlist, input, text, file, setDataList }) {
                 stroke-linejoin="round"
               />
             </svg>
-            {text}{" "}
+            <p> ტექსტი </p>{" "}
             <svg
               className="eight-svg"
               width="16"
@@ -989,7 +1003,7 @@ function Menudata({ alphabet, mainlist, input, text, file, setDataList }) {
                 stroke-linejoin="round"
               />
             </svg>{" "}
-            {input}
+            <p> ხმა </p>
           </button>
           <button className="menudata-list-button">
             {" "}
@@ -1030,7 +1044,7 @@ function Menudata({ alphabet, mainlist, input, text, file, setDataList }) {
                 stroke-linejoin="round"
               />
             </svg>
-            {file}{" "}
+            <p> PDF კონვერტაცია </p>{" "}
           </button>
         </div>
         <div className="menudata-bottom-div">
@@ -1103,6 +1117,7 @@ function App() {
   const [isClicked, setIsClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [datalist, setDataList] = useState(false);
+
   const handleReset = () => {
     setCompare(false);
     setFirstText("");
@@ -1116,16 +1131,7 @@ function App() {
         <Home setDataList={setDataList} />
         <Wrapper />
 
-        {Lists.map((item, index) => (
-          <Header
-            key={index}
-            alphabet={item.alphabet}
-            mainlist={item.mainlist}
-            input={item.input}
-            text={item.text}
-            file={item.file}
-          />
-        ))}
+        <Header />
       </div>
 
       <div className="right-side">
@@ -1163,19 +1169,12 @@ function App() {
         />
       </div>
 
-      {datalist &&
-        Lists.map((item, index) => (
-          <Menudata
-            key={index}
-            alphabet={item.alphabet}
-            mainlist={item.mainlist}
-            input={item.input}
-            text={item.text}
-            file={item.file}
-            onFinish={() => setDataList(false)}
-            setDataList={setDataList}
-          />
-        ))}
+      {datalist && (
+        <Menudata
+          onFinish={() => setDataList(false)}
+          setDataList={setDataList}
+        />
+      )}
     </div>
   );
 }

@@ -246,7 +246,6 @@
 .last-button {
   width: 142px;
   height: 48px;
-  background-color: #383a4899;
   color: white;
   border-radius: 6px;
   border: none;
@@ -541,8 +540,8 @@
 
   .hide-arrow {
     align-self: flex-end;
-    padding-top: 12px;
-    padding-right: 27px;
+    margin-top: 12px;
+    margin-right: 27px;
     cursor: pointer;
   }
   .Head-line {
