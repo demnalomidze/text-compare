@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 const Lists = [
   {
-    alphabet: "მართლწერა",
+    alphabet: "მართლმწერი",
     mainlist: "ტექსტის შედარება",
     input: "ხმა",
     text: "ტექსტი",
