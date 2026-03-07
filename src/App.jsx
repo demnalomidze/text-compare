@@ -353,6 +353,7 @@ function Header({ alphabet, mainlist, input, text, file }) {
       <div className="Head-line">
         <img className="image" src="/images/Bu2.png" alt="main-logo2" />
         <p className="wl-text2"> ENAGRAM </p>
+        <p className="wl-text"> - DEMNA </p>
       </div>
 
       <div className="menu-list">
