@@ -107,12 +107,20 @@ function Wrapper() {
 }
 
 function Change({ handleReset, isClicked, setIsClicked }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedLang, setSelectedLang] = useState("ქართული");
+
+  const languages = ["ქართული", "ინგლისური", "ესპანური", "რუსული"];
   return (
     <div className="Change-box">
       <div className="label-alpha-box">
         <div className="alphabet-changer">
-          <div className="changer-box">
-            <p className="changer-text"> ქართული </p>
+          <div
+            className="changer-box"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            style={{ cursor: "pointer", position: "relative" }}
+          >
+            <p className="changer-text">{selectedLang}</p>
             <svg
               className="third-svg"
               width="9"
@@ -120,12 +128,55 @@ function Change({ handleReset, isClicked, setIsClicked }) {
               viewBox="0 0 9 6"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              style={{
+                transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                transition: "transform 0.2s",
+              }}
             >
               <path
                 d="M4.243 5.657L0 1.414L1.415 0L4.243 2.829L7.071 0L8.486 1.414L4.243 5.657Z"
                 fill="#51555B"
               />
             </svg>
+
+            {dropdownOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  backgroundColor: "white",
+                  border: "1px solid #e0e0e0",
+                  borderRadius: "6px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  zIndex: 100,
+                  minWidth: "140px",
+                  marginTop: "4px",
+                }}
+              >
+                {languages.map((lang) => (
+                  <div
+                    key={lang}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setSelectedLang(lang);
+                      setDropdownOpen(false);
+                    }}
+                    style={{
+                      padding: "10px 14px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                      color: lang === selectedLang ? "#4571E4" : "#132450",
+                      backgroundColor:
+                        lang === selectedLang ? "#f0f7ff" : "transparent",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    {lang}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <div className="label-box">
@@ -326,7 +377,6 @@ function FooterLast({ setCompare, setIsLoading, firstText, secondText }) {
         disabled={isDisabled}
         style={{
           backgroundColor: isDisabled ? "#383a4899" : "#4571E4",
-          cursor: isDisabled ? "not-allowed" : "pointer",
         }}
       >
         შედარება
